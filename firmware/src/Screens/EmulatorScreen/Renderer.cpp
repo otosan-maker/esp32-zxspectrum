@@ -1,5 +1,5 @@
 #include "Renderer.h"
-#include "../../emulator/spectrum.h"
+#include "../../Emulator/spectrum.h"
 
 void displayTask(void *pvParameters) {
   Renderer *renderer = (Renderer *)pvParameters;
