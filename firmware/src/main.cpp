@@ -32,12 +32,8 @@
 #include "TFT/TFTDisplay.h"
 #include "TFT/ST7789.h"
 #include "TFT/ILI9341.h"
-#ifdef TOUCH_KEYBOARD
-#include "Input/TouchKeyboard.h"
-#endif
-#ifdef TOUCH_KEYBOARD_V2
-#include "Input/TouchKeyboardV2.h"
-#endif
+#include "Input/GaldeanoKeyboard.h"
+
 
 const char *MOUNT_POINT = "/fs";
 
@@ -133,8 +129,11 @@ void setup(void)
   MainMenuScreen menuPicker(*tft, audioOutput, files);
   Serial.println("aqui 2");
   navigationStack->push(&menuPicker);
+
+  //vTaskDelay(pdMS_TO_TICKS(5000));
+  //menuPicker.run48K();
   // start off the keyboard and feed keys into the active scene
-  SerialKeyboard *keyboard = new SerialKeyboard([&](SpecKeys key, bool down)
+  GaldeanoKeyboard *keyboard = new GaldeanoKeyboard([&](SpecKeys key, bool down)
                                                 { navigationStack->updatekey(key, down); if (down) { navigationStack->pressKey(key); } });
 Serial.println("aqui 3");
 // start up the nunchuk controller and feed events into the active screen

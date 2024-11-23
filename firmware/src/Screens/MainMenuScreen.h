@@ -41,7 +41,7 @@ public:
                                    { this->run48K(); }),
         std::make_shared<MenuItem>("128K ZX Spectrum", [&]()
                                    { this->run128K(); }),
-        std::make_shared<MenuItem>("Games", [&]()
+        std::make_shared<MenuItem>(" Juegos", [&]()
                                    { this->showGames(); }),
         std::make_shared<MenuItem>("Snapshots", [&]()
                                    { this->showSnapshots(); }),
