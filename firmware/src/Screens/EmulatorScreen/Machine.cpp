@@ -23,7 +23,7 @@ void Machine::runEmulator() {
         lastTime = currentTime;
         float cycles = cycleCount / (elapsed * 1000.0);
         float fps = renderer->getFrameCount() / (elapsed / 1000.0);
-        Serial.printf("Executed at %.3FMHz cycles, frame rate=%.2f\n", cycles, fps);
+        //Serial.printf("Executed at %.3FMHz cycles, frame rate=%.2f\n", cycles, fps);
         renderer->resetFrameCount();
         cycleCount = 0;
       }

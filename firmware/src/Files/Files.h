@@ -259,17 +259,22 @@ public:
 
   FileLetterCountVector getFileLetters(const char *folder, const std::vector<std::string> &extensions)
   {
+    Serial.println("entro en getFileLetters");
     auto bl = BusyLight();
     FileLetterCountVector fileLetters;
     if (!fileSystem->isMounted())
     {
       return fileLetters;
     }
+    Serial.println("file system activo");
+    Serial.printf("Listing directory: %s",fileSystem->mountPoint());
+    Serial.printf("Listing directory: %s",folder);
     std::string full_path = std::string(fileSystem->mountPoint()) + folder;
-    std::cout << "Listing directory: " << full_path << std::endl;
-
+    Serial.printf("Listing directory: %s",full_path.c_str());
+    //std::cout << "Listing directory: " << full_path << std::endl;
+    Serial.println("me escribe a stdout !!! DIOS !!!!!");
     std::map<std::string, int> fileCountByLetter;
-
+    Serial.println("otra freakeada con un map ... ");
     for (DirectoryIterator it(full_path, nullptr, extensions); it != DirectoryIterator(); ++it)
     {
       std::string filename = it->d_name;
@@ -283,13 +288,16 @@ public:
       }
       fileCountByLetter[letter]++;
     }
+    Serial.println("saldremos del iterador de directorios ?? apuesto que no");
     for (auto &entry : fileCountByLetter)
     {
       fileLetters.push_back(FileLetterCountPtr(new FileLetterCount(entry.first, entry.second)));
     }
+    Serial.println("esto es un for, que diablossss");
     // sort the fileLetters alphabetically
     std::sort(fileLetters.begin(), fileLetters.end(), [](FileLetterCountPtr a, FileLetterCountPtr b)
               { return a->getLetter() < b->getLetter(); });
+    Serial.println("ordenamos con un template, normal que no vea bien el C");
     return fileLetters;
   }
 
@@ -310,7 +318,8 @@ public:
 
     for (DirectoryIterator it(full_path, prefix, extensions); it != DirectoryIterator(); ++it)
     {
-      files.push_back(FileInfoPtr(new FileInfo(StringUtils::upcase(it->d_name), full_path + "/" + it->d_name)));
+      //files.push_back(FileInfoPtr(new FileInfo(StringUtils::upcase(it->d_name), full_path + "/" + it->d_name)));
+      files.push_back(FileInfoPtr(new FileInfo(StringUtils::upcase(it->d_name), full_path + it->d_name)));
     }
     // sort the files - is this needed? Maybe they are already alphabetically sorted
     std::sort(files.begin(), files.end(), [](FileInfoPtr a, FileInfoPtr b)

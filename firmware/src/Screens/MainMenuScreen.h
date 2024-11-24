@@ -81,6 +81,7 @@ public:
     std::vector<std::string> extensions
     )
   {
+    Serial.println("empezamos por aqui");
     if (!m_files->isAvailable())
     {
       ErrorScreen *errorScreen = new ErrorScreen(
@@ -90,8 +91,12 @@ public:
       m_navigationStack->push(errorScreen);
       return;
     }
+    Serial.println("file system activo");
     drawBusy();
+    Serial.println("dibujado el cuadro activo");
+    Serial.println(path.c_str());
     FileLetterCountVector fileLetterCounts = m_files->getFileLetters(path.c_str(), extensions);
+    Serial.println("recibido el vector");
     if (fileLetterCounts.size() == 0)
     {
       ErrorScreen *errorScreen = new ErrorScreen(
@@ -101,6 +106,7 @@ public:
       m_navigationStack->push(errorScreen);
       return;
     }
+    Serial.println("y no es cero");
     AlphabetPicker<Files_T, FilterPickerScreen_T> *alphabetPicker = new AlphabetPicker<Files_T, FilterPickerScreen_T>(title, m_files,  m_tft, m_audioOutput, path, extensions);
     alphabetPicker->setItems(fileLetterCounts);
     m_navigationStack->push(alphabetPicker);

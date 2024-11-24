@@ -76,16 +76,15 @@ void setup(void)
     if (files->isAvailable()){
       Serial.println("y el file system está disponible");
       //files->createDirectory("/fs/snapshots");
-      FILE* f = fopen("/fs/jetpac.z80","r");
+      FILE* f = fopen("/fs/aticatac.z80","r");
       if (f== NULL){
         Serial.println("no encuentro el fichero aticatac.z80");
       }else{
         fclose(f);
       }
-      
     }
   }
-
+  files->createDirectory("/snapshots");
   // navigation stack
   NavigationStack *navigationStack = new NavigationStack();
   MainMenuScreen menuPicker(*tft, audioOutput, files);
