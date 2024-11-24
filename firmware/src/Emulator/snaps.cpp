@@ -30,6 +30,7 @@
 #include "./z80/z80.h"
 #include "./spectrum.h"
 #include "./snaps.h"
+#include "Arduino.h"
 
 bool Load(ZXSpectrum *speccy, const char *filename)
 {
@@ -156,11 +157,11 @@ int getZ80Version(uint8_t *buffer)
 {
   if (buffer[6] != 0 || buffer[7] != 0)
   {
-    printf("getZ80Version: PC: %x\n", buffer[6] + (buffer[7] << 8));
+    Serial.printf("_getZ80Version: PC: %x\n", buffer[6] + (buffer[7] << 8));
     return 1;
   }
   int ahb_len = buffer[30] + (buffer[31] << 8);
-  printf("AHB: %x\n", ahb_len);
+  Serial.printf("AHB: %x\n", ahb_len);
   if (ahb_len == 23)
   {
     return 2;
@@ -218,12 +219,12 @@ bool loadZ80Version1(ZXSpectrum *speccy, uint8_t *buffer, FILE *fp)
   fseek(fp, 30, SEEK_SET);
   if (buffer[12] & 0x20)
   {
-    printf("Loading compressed data %x\n", totalSize - 30);
+    Serial.printf("Loading compressed data %x\n", totalSize - 30);
     decompressZ80BlockV1(fp, totalSize - 30, speccy);
   }
   else
   {
-    printf("Loading uncompressed data %x\n", totalSize - 30);
+    Serial.printf("Loading uncompressed data %x\n", totalSize - 30);
     for (int i = 0; i < 0xC000 && i < totalSize - 30; i++)
     {
       speccy->z80_poke(i + 0x4000, fgetc(fp));
@@ -231,9 +232,9 @@ bool loadZ80Version1(ZXSpectrum *speccy, uint8_t *buffer, FILE *fp)
   }
   speccy->z80Regs->PC.B.l = buffer[6];
   speccy->z80Regs->PC.B.h = buffer[7];
-  printf("PC: %x\n", speccy->z80Regs->PC.W);
+  Serial.printf("PC: %x\n", speccy->z80Regs->PC.W);
   loadZ80Regs(speccy, buffer);
-  printf("PC: %x\n", speccy->z80Regs->PC.W);
+  Serial.printf("PC: %x\n", speccy->z80Regs->PC.W);
   return true;
 }
 
@@ -356,11 +357,11 @@ bool loadZ80Version2or3(ZXSpectrum *speccy, uint8_t *buffer, int version, FILE *
 
 bool LoadZ80(ZXSpectrum *speccy, const char *filename)
 {
-  printf("Loading Z80 file %s\n", filename);
+  Serial.printf("Loading Z80 file %s\n", filename);
   FILE *fp = fopen(filename, "rb");
   if (!fp)
   {
-    printf("Could not open file\n");
+    Serial.printf("Could not open file\n");
     return false;
   }
   // read in the header
@@ -370,20 +371,20 @@ bool LoadZ80(ZXSpectrum *speccy, const char *filename)
     buffer[12] = 1; /*as told in CSS FAQ / .z80 section */
   bool res = false;
   int version = getZ80Version(buffer);
-  printf("Z80 version %d\n", version);
+  Serial.printf("Z80 version %d\n", version);
   switch (version)
   {
   case 1:
-    printf("Loading Z80 version 1\n");
+    Serial.printf("Loading Z80 version 1\n");
     res = loadZ80Version1(speccy, buffer, fp);
     break;
   case 2:
   case 3:
-    printf("Loading Z80 version %d\n", version);
+    Serial.printf("Loading Z80 version %d\n", version);
     res = loadZ80Version2or3(speccy, buffer, version, fp);
     break;
   default:
-    printf("Unknown Z80 version %d\n", version);
+    Serial.printf("Unknown Z80 version %d\n", version);
     break;
   }
   fclose(fp);

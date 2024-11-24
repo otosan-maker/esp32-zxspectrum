@@ -64,14 +64,12 @@ public:
   {
     EmulatorScreen *emulatorScreen = new EmulatorScreen(m_tft, m_audioOutput);
     emulatorScreen->run("", models_enum::SPECMDL_48K);
-    // touchKeyboard->setToggleMode(true);
     m_navigationStack->push(emulatorScreen);
   }
   void run128K()
   {
     EmulatorScreen *emulatorScreen = new EmulatorScreen(m_tft, m_audioOutput);
     emulatorScreen->run("", models_enum::SPECMDL_128K);
-    // touchKeyboard->setToggleMode(true);
     m_navigationStack->push(emulatorScreen);
   }
 
