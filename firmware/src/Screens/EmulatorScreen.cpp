@@ -22,9 +22,12 @@ EmulatorScreen::EmulatorScreen(TFTDisplay &tft, AudioOutput *audioOutput) : Scre
 void EmulatorScreen::run(std::string filename, models_enum model)
 {
   m_tft.fillScreen(TFT_BLACK);
+  
   renderer->start();
   auto bl = BusyLight();
+  model=SPECMDL_48K;
   machine->setup(model);
+  Serial.printf("model setup %d \n",model);
   if (filename.size() > 0)
   {
     // check for tap or tpz files

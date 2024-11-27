@@ -89,7 +89,7 @@ void setup(void)
   NavigationStack *navigationStack = new NavigationStack();
   MainMenuScreen menuPicker(*tft, audioOutput, files);
   navigationStack->push(&menuPicker);
-
+  //menuPicker.run48K();
   // start off the keyboard and feed keys into the active scene
   GaldeanoKeyboard *keyboard = new GaldeanoKeyboard([&](SpecKeys key, bool down)
                                                 { navigationStack->updatekey(key, down); if (down) { navigationStack->pressKey(key); } });
@@ -103,9 +103,8 @@ void setup(void)
                                     NUNCHUK_CLOCK, NUNCHUK_DATA);
 #endif
   Serial.println("Running on core: " + String(xPortGetCoreID()));
-  // just keep running
-  while (true)
-  {
+
+  while(true){
     vTaskDelay(10000);
   }
 }
@@ -113,4 +112,5 @@ void setup(void)
 unsigned long frame_millis;
 void loop()
 {
+    
 }
