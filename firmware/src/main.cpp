@@ -33,6 +33,8 @@
 #include "TFT/ST7789.h"
 #include "TFT/ILI9341.h"
 #include "Input/GaldeanoKeyboard.h"
+#include "Wire.h"
+#include "Input/m5_unit_joystick2.hpp"
 
 
 const char *MOUNT_POINT = "/fs";
@@ -75,13 +77,6 @@ void setup(void)
     Serial.println("Montado el sistema SPFFI");
     if (files->isAvailable()){
       Serial.println("y el file system está disponible");
-      //files->createDirectory("/fs/snapshots");
-      FILE* f = fopen("/fs/aticatac.z80","r");
-      if (f== NULL){
-        Serial.println("no encuentro el fichero aticatac.z80");
-      }else{
-        fclose(f);
-      }
     }
   }
   files->createDirectory("/snapshots");
@@ -102,6 +97,12 @@ void setup(void)
                                     { navigationStack->pressKey(key); },
                                     NUNCHUK_CLOCK, NUNCHUK_DATA);
 #endif
+
+M5UnitJoystick2 *mJoyStick2 = new M5UnitJoystick2([&](SpecKeys key, bool down)
+                                    { navigationStack->updatekey(key, down); },
+                                    [&](SpecKeys key)
+                                    { navigationStack->pressKey(key); });
+
   Serial.println("Running on core: " + String(xPortGetCoreID()));
 
   while(true){
