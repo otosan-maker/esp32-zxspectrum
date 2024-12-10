@@ -47,6 +47,9 @@ void GaldeanoKeyboard::keyboardTask(void *pParam)
       keyValue = SpecKeys(teclas[i]);
       //Serial.printf("Tecla almacenada %d\n",teclas[i]);
       keyboard->m_keyEvent(keyValue, down);
+      if(keyValue==SPECKEY_RESET){
+        esp_restart();
+      }
     }
     
     vTaskDelay(100);

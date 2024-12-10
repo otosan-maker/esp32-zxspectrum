@@ -1,0 +1,237 @@
+2024-12-10
+al llegar a cualquier funcion se bloquea, el codigo de las funciones que leen es (p. ej.)
+static int vfs_fat_open(void* ctx, const char * path, int flags, int mode)
+{
+    ESP_LOGV(TAG, "%s: path=\"%s\", flags=%x, mode=%x", __func__, path, flags, mode);
+    vfs_fat_ctx_t* fat_ctx = (vfs_fat_ctx_t*) ctx;
+    _lock_acquire(&fat_ctx->lock);
+    [....]
+}
+
+
+2024-12-09
+He cambiado todas las clases, asi lo pordre reusar en micropython, lvgl ... ¿?
+Falla esta asertcion
+assert failed: 
+
+
+
+Sharing the SPI bus among SD card and other SPI devices
+=======================================================
+
+The SD card has a SPI mode, which allows it being communicated to as a SPI device. But there are some restrictions that we need to pay attention to.
+
+Pin loading of other devices
+----------------------------
+
+When adding more devices onto the same bus, the overall pin loading increase. The loading consists of AC loading (pin capacitor) and DC loading (pull-ups).
+
+AC loading
+^^^^^^^^^^
+
+SD cards, which are designed for high-speed communications, have small pin capacitors (AC loading) to work until 50MHz. However, the other attached devices will make the AC loading of the pins larger.
+
+The heavy AC loading of the pin may prevent it from being toggled quickly, and you will see the edges of the pin become smoother and not ideal any more. This may violate the setup timing requirements of SD card. Even worse, the clock from the host may not be recognized by the SD card and other SPI devices.
+
+This issue may be move obvious, if other attached devices are not designed to work under the same frequency as the SD card, because they may have larger pin capacitors.
+
+To see if your pin AC loading is too heavy, you can try the following tests:
+
+1. Use an oscilloscope to see the clock, and comparing the data line with the clock. 
+   - If you see the clock is not fast enough (for example, the rising/falling edge is longer than 1/4 of the clock cycle), it means the clock is skewed too much.
+   - If you see the data line cannot be stable before the latch edge (rising edge) of the clock, it means the load of the data line is too large.
+
+   You may also observed the corresponding phenomenon (data delayed largely from launching edge of clock) with logic analyzers. But it's not as obvious as an oscilloscope.
+
+2. Try to use slower clock frequency to see if it works.
+
+   It's an indication that the AC loading on the pins is too large, if lower frequency can work while higher frequency can't. 
+
+If the AC loading of the pins is too large, you have no other choices but to use other faster devices (with lower pin load), or slow down the clock speed.
+
+DC loading
+^^^^^^^^^^
+
+The pull-ups required by SD cards are usually around 10 kOhm to 50 kOhm, which may be too large for some other SPI devices. 
+
+Check the specification about the DC output current of your device, it should be larger than 500uA. 
+For example, the LCD on Espressif official Wrover devkit has only 1uA drive strength, whic is not sufficient to drive such pull-ups. 
+When using SD card with such devices, the output of these devices cannot be read correctly by the host.
+
+Initialization sequence
+-----------------------
+
+.. note::
+
+  To avoid the influence of pin loading (see above section), please make sure the timing is correct, 
+  or set the clock speed of slower (SDMMC_FREQ_PROBING = 400KH for SD card) before continuing.
+
+When using the SD card with other SPI devices on the same SPI bus, due to the restrictions of SD card startup flow, 
+the following initialization sequence must be followed: (See also :example:`storage/sd_card`)
+
+1. Initialize the SPI bus properly by `spi_bus_initialize`.
+2. Tie the CS lines of all other devices to high. This is to avoid conflicts to the SD card in the following step.
+
+   You can do this by either:
+   1. Attach devices to the SPI bus by calling `spi_bus_add_device`. This function will initialize the GPIO that is used as CS to the idle level: high.
+   2. Initialize GPIO on the CS pin that needs to be tied up before actually adding a new device.
+   3. Rely on the internal/external pull-up (not recommended). 
+   You need to check carefull the pull-up is strong enough and there are no other pull-down that will influence the pull-up 
+   (For example, internal pull-down is not enabled).
+
+3. Mount the card to the filesystem by calling `esp_vfs_fat_sdspi_mount`. 
+   This step will put the SD card into the SPI mode, which MUST be done before all other SPI communications on the same bus. 
+   Otherwise the card will stay in the SD mode, in which it may randomly respond to any SPI communications on the bus, even when its CS line is not addressed. 
+
+   If you want to test this behavior, please also note that, once the card is put into SPI mode, 
+   it will not return to SD mode before next power cycle, i.e. powered down and powered up again.
+
+4. Now you can talk to other SPI devices freely!
+
+
+
+
+2024-12-08
+Claro, falla al inicializar el bus spi en la clase ILI9341, comentamos la inicialización del bus:
+//ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO)); 
+
+Ahora al llegar al TFT las escrituras sobre la pantalla 'petan':
+E (32) ledc: ledc_channel_config(608): gpio_num argument is invalid
+TFTDisplay created
+E (484) spi_master: check_trans_valid(696): txdata transfer > host maximum
+assert failed: spi_device_polling_end spi_master.c:996 (host->cur_cs == handle->id)
+Backtrace: 0x4037824a:0x3fceb8f0 0x4037bad1:0x3fceb910 0x40381f55:0x3fceb930 0x4202943b:0x3fceba60 0x420149c5:0x3fceba90 0x42014aec:0x3fcebab0 0x42014b67:0x3fcebad0 0x42014c31:0x3fcebaf0 0x420147fd:0x3fcebb10 0x42017916:0x3fcebb90 0x420223fa:0x3fcebc50
+  #0  0x4037824a in panic_abort at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/esp_system/panic.c:408
+  #1  0x4037bad1 in esp_system_abort at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/esp_system/esp_system.c:137
+  #2  0x40381f55 in __assert_func at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/newlib/assert.c:85
+  #3  0x4202943b in spi_device_polling_end at /home/runner/work/esp32-arduino-lib-builder/esp32-arduino-lib-builder/esp-idf/components/driver/spi_master.c:997
+  #4  0x420149c5 in TFTDisplay::dmaWait() at src/TFT/TFTDisplay.cpp:379
+      (inlined by) TFTDisplay::dmaWait() at src/TFT/TFTDisplay.cpp:375
+  #5  0x42014aec in TFTDisplay::sendColor(unsigned short, int) at src/TFT/TFTDisplay.cpp:181 (discriminator 2)
+  #6  0x42014b67 in TFTDisplay::fillRect(short, short, short, short, unsigned short) at src/TFT/TFTDisplay.cpp:222
+  #7  0x42014c31 in TFTDisplay::fillScreen(unsigned short) at src/TFT/TFTDisplay.cpp:350
+  #8  0x420147fd in ILI9341::ILI9341(gpio_num_t, gpio_num_t, gpio_num_t, gpio_num_t, gpio_num_t, gpio_num_t, int, int) at src/TFT/ILI9341.cpp:141
+  #9  0x42017916 in setup() at /home/angel/.platformio/packages/toolchain-xtensa-esp32s3/xtensa-esp32s3-elf/include/c++/8.4.0/bits/basic_string.tcc:446
+  #10 0x420223fa in loopTask(void*) at /home/angel/.platformio/packages/framework-arduinoespressif32/cores/esp32/main.cpp:42
+
+
+
+
+
+
+
+2024-12-07
+
+INICIALIZAR EL BUS SPI, para compartirlo entre TFT y SDCard
+
+YA SE INICIALIZA LA TARJETA SDCARD
+
+
+SPI bus
+
+tft ili9341
+    spi_bus_config_t buscfg
+    spi_device_interface_config_t devcfg
+    ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO));
+    ESP_ERROR_CHECK(spi_bus_add_device(SPI2_HOST, &devcfg, &spi));
+    spi_device_acquire_bus(spi, portMAX_DELAY);
+
+
+SDCard
+    m_mountPoint = mountPoint;
+    m_host.max_freq_khz = SDMMC_FREQ_52M;
+    m_host.slot = SD_CARD_SPI_HOST;
+    esp_err_t ret;
+    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+      .format_if_mount_failed = false,
+      .max_files = 5,
+      .allocation_unit_size = 16 * 1024};
+    spi_bus_config_t bus_cfg = {
+      .mosi_io_num = mosi,
+      .miso_io_num = miso,
+      .sclk_io_num = clk,
+      .quadwp_io_num = -1,
+      .quadhd_io_num = -1,
+      .max_transfer_sz = 16384,
+      .flags = 0,
+      .intr_flags = 0
+    };
+    ret = spi_bus_initialize(spi_host_device_t(m_host.slot), &bus_cfg, SPI_DMA_CHAN);
+    sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
+    slot_config.gpio_cs = cs;
+    slot_config.host_id = spi_host_device_t(m_host.slot);
+    ret = esp_vfs_fat_sdspi_mount(mountPoint, &m_host, &slot_config, &mount_config, &m_card);
+
+
+
+sd_card_example
+    esp_vfs_fat_sdmmc_mount_config_t mount_config = {
+        .format_if_mount_failed = false,           // EXAMPLE_FORMAT_IF_MOUNT_FAILED
+        .max_files = 5,
+        .allocation_unit_size = 16 * 1024
+    };
+    sdmmc_card_t *card;
+    const char mount_point[] = MOUNT_POINT;
+    sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+    host.max_freq_khz = 400;
+    spi_bus_config_t bus_cfg = {
+        .mosi_io_num = PIN_NUM_MOSI,
+        .miso_io_num = PIN_NUM_MISO,
+        .sclk_io_num = PIN_NUM_CLK,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+        .max_transfer_sz = 4000,
+    };
+    ret = spi_bus_initialize(host.slot, &bus_cfg, SDSPI_DEFAULT_DMA);
+    sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
+    slot_config.gpio_cs = PIN_NUM_CS;
+    slot_config.host_id = host.slot;
+    ret = esp_vfs_fat_sdspi_mount(mount_point, &host, &slot_config, &mount_config, &card);
+
+
+
+
+
+**** PIN recovery time ****
+
+PIN 18 CLK   10044 cycles
+PIN 23 MOSI  10029 cycles
+PIN 19 MISO  10029 cycles
+PIN  5 CS    235 cycles
+
+**** PIN recovery time with weak pullup ****
+
+PIN 18 CLK   187 cycles
+PIN 23 MOSI  188 cycles
+PIN 19 MISO  44 cycles
+PIN  5 CS    92 cycles
+
+**** PIN voltage levels ****
+
+PIN 18 CLK   2.8V
+PIN 23 MOSI  3.1V
+PIN 19 MISO  0.5V
+PIN  5 CS    0.1V
+
+**** PIN voltage levels with weak pullup ****
+
+PIN 18 CLK   1.3V
+PIN 23 MOSI  2.3V
+PIN 19 MISO  0.3V
+PIN  5 CS    0.1V
+
+**** PIN cross-talk ****
+
+              CLK    MOSI   MISO   CS     
+PIN 18 CLK      --   2.4V  1.2V  2.2V  
+PIN 23 MOSI    2.1V   --   1.0V  1.0V  
+PIN 19 MISO    0.7V  1.6V   --   0.1V  
+PIN  5 CS      0.4V  1.3V  0.3V   --   
+
+**** PIN cross-talk with weak pullup ****
+
+              CLK    MOSI   MISO   CS     
+PIN 18 CLK      --   1.8V  1.0V  2.3V  
+PIN 23 MOSI    0.9V   --   0.4V  0.2V  
+PIN 19 MISO    0.3V  1.1V   --   0.1V  
+PIN  5 CS      0.3V  0.9V  0.4V   --   

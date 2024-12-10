@@ -8,3 +8,4 @@
 *.o
 *.d
 .DS_Store
+firmware/data
