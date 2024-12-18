@@ -35,7 +35,7 @@
 #include "Input/GaldeanoKeyboard.h"
 #include "Wire.h"
 #include "Input/m5_unit_joystick2.hpp"
-
+#include "Files/GaldeanoFAT.h"
 
 const char *MOUNT_POINT = "/fs";
 
@@ -45,8 +45,13 @@ void setup(void)
   Serial.println("Arrancamos");
     // Files
 
-  Flash *fileSystem = new Flash(MOUNT_POINT);
-  Files<Flash> *files = new Files<Flash>(fileSystem);
+  //Flash *fileSystem = new Flash(MOUNT_POINT);
+  //Files<Flash> *files = new Files<Flash>(fileSystem);
+
+
+  GaldeanoFAT *fileSystem = new GaldeanoFAT(MOUNT_POINT);
+  Files<GaldeanoFAT> *files = new Files<GaldeanoFAT>(fileSystem);
+
 
   // print out avialable ram
   Serial.printf("Free heap: %d\n", ESP.getFreeHeap());
@@ -56,6 +61,8 @@ void setup(void)
 
   Serial.println("Starting up");
  
+  while(true) vTaskDelay(pdMS_TO_TICKS(10000));
+
   // Audio output
 #ifdef USE_DAC_AUDIO
   AudioOutput *audioOutput = new DACOutput(I2S_NUM_0);

@@ -80,5 +80,6 @@ void EmulatorScreen::updatekey(SpecKeys key, uint8_t state)
 
 void EmulatorScreen::showSaveSnapshotScreen()
 {
+  //GALDEANO_TODO_002
   m_navigationStack->push(new SaveSnapshotScreen(m_tft, m_audioOutput, machine->getMachine()));
 }

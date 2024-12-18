@@ -8,6 +8,9 @@ static int vfs_fat_open(void* ctx, const char * path, int flags, int mode)
     [....]
 }
 
+He probado poniendo 4 resistencias de pull-up, no arreglan nada.
+Al final abandonamos. A ver como funciona usb-mcd
+
 
 2024-12-09
 He cambiado todas las clases, asi lo pordre reusar en micropython, lvgl ... ¿?

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Serial.h"
 #include "GaldeanoKeyboard.h"
+#include "../Emulator/keyboard_defs.h"
 
 GaldeanoKeyboard::GaldeanoKeyboard(KeyEventType keyEvent) : m_keyEvent(keyEvent)
 {
