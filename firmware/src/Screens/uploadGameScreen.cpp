@@ -3,7 +3,7 @@
 #include "fonts/GillSans_30_vlw.h"
 #include "fonts/GillSans_15_vlw.h"
 #include "images/rainbow_image.h"
-#include "tusb_msc_storage.h"
+#include "esp_ota_ops.h"
 
 
 uploadGameScreen::uploadGameScreen(TFTDisplay &tft,AudioOutput *audioOutput) : Screen(tft, audioOutput){
@@ -18,7 +18,19 @@ void uploadGameScreen::setupStorage(){
   //usb_msc_init();
   //msc_init();
   //SPIFFS.end();
-  setupMSC();
+  //setupMSC();
+
+  
+  const esp_partition_t *data_partition = esp_partition_find_first(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_OTA_0, NULL);
+  if (data_partition==NULL)
+    Serial.printf("data partition not found\n");
+  esp_err_t err = esp_ota_set_boot_partition(data_partition);
+  
+  Serial.printf("salida de set boot partittion %d",err);
+  Serial.println("");
+  vTaskDelay(pdMS_TO_TICKS(2000));
+  esp_restart();
+
 }
 
 

@@ -1,3 +1,14 @@
+2024-12-23
+Habia problemas con la version de esp-idf que estaba usando, en el freamework de arduino es la 4.4
+Ahora monta bien la particion fat de la flash
+Juego a poner dos app en dos particiones, para escribir la particion:
+esptool.py  write_flash 0x110000 build/tusb_msc.bin 
+idf.py erase-otadata
+idf.py read-otadata
+parttool.py  write_partition --partition-name=usbmsc --input build/usb-msc.bin
+
+
+
 2024-12-10
 al llegar a cualquier funcion se bloquea, el codigo de las funciones que leen es (p. ej.)
 static int vfs_fat_open(void* ctx, const char * path, int flags, int mode)

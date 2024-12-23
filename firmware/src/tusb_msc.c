@@ -294,22 +294,22 @@ void setupMSC()
     ESP_ERROR_CHECK(tinyusb_driver_install(&tusb_cfg));
     ESP_LOGI(TAG, "USB MSC initialization DONE");
 
-    esp_console_repl_config_t repl_config = ESP_CONSOLE_REPL_CONFIG_DEFAULT();
-    /* Prompt to be printed before each line.
-     * This can be customized, made dynamic, etc.
-     */
-    repl_config.prompt = PROMPT_STR ">";
-    repl_config.max_cmdline_length = 64;
+    // esp_console_repl_config_t repl_config = ESP_CONSOLE_REPL_CONFIG_DEFAULT();
+    // /* Prompt to be printed before each line.
+    //  * This can be customized, made dynamic, etc.
+    //  */
+    // repl_config.prompt = PROMPT_STR ">";
+    // repl_config.max_cmdline_length = 64;
 
-    // Init console based on menuconfig settings
+    // // Init console based on menuconfig settings
 
-    esp_console_dev_uart_config_t hw_config = ESP_CONSOLE_DEV_UART_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_console_new_repl_uart(&hw_config, &repl_config, &repl));
+    // esp_console_dev_uart_config_t hw_config = ESP_CONSOLE_DEV_UART_CONFIG_DEFAULT();
+    // ESP_ERROR_CHECK(esp_console_new_repl_uart(&hw_config, &repl_config, &repl));
 
 
-    for (int count = 0; count < sizeof(cmds) / sizeof(esp_console_cmd_t); count++) {
-        ESP_ERROR_CHECK(esp_console_cmd_register(&cmds[count]));
-    }
+    // for (int count = 0; count < sizeof(cmds) / sizeof(esp_console_cmd_t); count++) {
+    //     ESP_ERROR_CHECK(esp_console_cmd_register(&cmds[count]));
+    // }
 
-    ESP_ERROR_CHECK(esp_console_start_repl(repl));
+    // ESP_ERROR_CHECK(esp_console_start_repl(repl));
 }

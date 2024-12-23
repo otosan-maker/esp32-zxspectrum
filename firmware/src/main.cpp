@@ -36,12 +36,16 @@
 #include "Wire.h"
 #include "Input/m5_unit_joystick2.hpp"
 #include "Files/GaldeanoFAT.h"
+#define tt ESP_IDF_VERSION_MAJOR
+
 
 const char *MOUNT_POINT = "/fs";
+
 
 void setup(void)
 {
   Serial.begin(115200);
+  Serial.println("");
   Serial.println("Arrancamos");
     // Files
 
@@ -54,14 +58,28 @@ void setup(void)
 
 
   // print out avialable ram
-  Serial.printf("Free heap: %d\n", ESP.getFreeHeap());
-  Serial.printf("Free PSRAM: %d\n", ESP.getFreePsram());
+  Serial.printf("Free heap:  %d\n", ESP.getFreeHeap());
+  Serial.printf("Free PSRAM: %d\n", ESP.getFreePsram(),ESP_IDF_VERSION_MAJOR);
   
   //vTaskDelay(pdMS_TO_TICKS(10000));
 
+  
+  char tmp[100];
+  FILE *pFile = fopen("/fs/README.MD","a");
+  if (pFile == NULL) Serial.println("No esta el filesystem ok");
+  fprintf(pFile,"otra fila %d\n",1);
+  fclose(pFile);
+  //while(true) vTaskDelay(pdMS_TO_TICKS(10000));
+  pFile = fopen("/fs/README.MD","r");
+  if (pFile == NULL) Serial.println("No leo README.MD");
+  while (!feof(pFile)){
+    fread((void *)tmp,1,90,pFile);
+    Serial.printf("%s",tmp);
+  }
+  fclose(pFile);
+  
+
   Serial.println("Starting up");
- 
-  while(true) vTaskDelay(pdMS_TO_TICKS(10000));
 
   // Audio output
 #ifdef USE_DAC_AUDIO
@@ -79,13 +97,6 @@ void setup(void)
   
   TFTDisplay *tft = new ILI9341(TFT_MOSI, TFT_SCLK, TFT_CS, TFT_DC, TFT_RST, TFT_BL, TFT_WIDTH, TFT_HEIGHT);
   
-  // create the directory structure
-  if (fileSystem->isMounted()){
-    Serial.println("Montado el sistema SPFFI");
-    if (files->isAvailable()){
-      Serial.println("y el file system está disponible");
-    }
-  }
   files->createDirectory("/snapshots");
   // navigation stack
   NavigationStack *navigationStack = new NavigationStack();

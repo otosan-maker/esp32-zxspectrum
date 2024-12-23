@@ -12,15 +12,14 @@ static const char *TAG = "GaldeanoFAT";
 class GaldeanoFAT
 {
 private:
-  bool _isMounted;
+  bool _isMounted=false;
   const char *_mountPoint;
 
   const char *m_base_path;
   int m_max_files;
-  wl_handle_t wl_handle;
+  wl_handle_t wl_handle= WL_INVALID_HANDLE;
+ 
 
-  esp_err_t storage_init_spiflashG(wl_handle_t *wl_handle);
-  esp_err_t tinyusb_msc_storage_mountG(const char *base_path);
 
 public:
   GaldeanoFAT(const char *mountPoint);
