@@ -8,6 +8,11 @@ idf.py read-otadata
 parttool.py  write_partition --partition-name=usbmsc --input build/usb-msc.bin
 
 
+Cuando lo monta el segundo programa da un error:
+W (452) tinyusb_msc_storage: f_mount failed (13)
+W (452) tinyusb_msc_storage: formatting card, allocation unit size=4096
+
+
 
 2024-12-10
 al llegar a cualquier funcion se bloquea, el codigo de las funciones que leen es (p. ej.)

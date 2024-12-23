@@ -27,7 +27,7 @@ GaldeanoFAT::GaldeanoFAT(const char *mountPoint)
         Serial.printf("Failed to mount FATFS (%s)\n", esp_err_to_name(m_cod_err));
         return ;
     }
-    Serial.printf("Rsult mount FATFS (%s)\n", esp_err_to_name(m_cod_err));
+    Serial.printf("Result mount FATFS (%s)\n", esp_err_to_name(m_cod_err));
    
   if (m_cod_err==ESP_OK)
   {
