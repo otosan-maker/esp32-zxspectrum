@@ -47,12 +47,14 @@ void setup(void)
   Serial.begin(115200);
   Serial.println("");
   Serial.println("Arrancamos");
-    // Files
+  
+  // Files
 
+  //SPIFFS
   //Flash *fileSystem = new Flash(MOUNT_POINT);
   //Files<Flash> *files = new Files<Flash>(fileSystem);
 
-
+  //FAT Files
   GaldeanoFAT *fileSystem = new GaldeanoFAT(MOUNT_POINT);
   Files<GaldeanoFAT> *files = new Files<GaldeanoFAT>(fileSystem);
 
@@ -61,22 +63,24 @@ void setup(void)
   Serial.printf("Free heap:  %d\n", ESP.getFreeHeap());
   Serial.printf("Free PSRAM: %d\n", ESP.getFreePsram(),ESP_IDF_VERSION_MAJOR);
   
-  //vTaskDelay(pdMS_TO_TICKS(10000));
 
+  // probar si el filesistem esta bien montado
+  // FILE *pFile = fopen("/fs/README.MD","a");
+  // if (pFile == NULL) Serial.println("No esta el filesystem ok");
+  // fprintf(pFile,"otra fila %d\n",1);
+  // fclose(pFile);
   
-  char tmp[100];
-  FILE *pFile = fopen("/fs/README.MD","a");
-  if (pFile == NULL) Serial.println("No esta el filesystem ok");
-  fprintf(pFile,"otra fila %d\n",1);
-  fclose(pFile);
   //while(true) vTaskDelay(pdMS_TO_TICKS(10000));
-  pFile = fopen("/fs/README.MD","r");
-  if (pFile == NULL) Serial.println("No leo README.MD");
-  while (!feof(pFile)){
-    fread((void *)tmp,1,90,pFile);
-    Serial.printf("%s",tmp);
-  }
-  fclose(pFile);
+ 
+ // probar si el filesistem esta bien montado
+  // char tmp[100];
+  // pFile = fopen("/fs/README.MD","r");
+  // if (pFile == NULL) Serial.println("No leo README.MD");
+  // while (!feof(pFile)){
+  //   fread((void *)tmp,1,90,pFile);
+  //   Serial.printf("%s",tmp);
+  // }
+  // fclose(pFile);
   
 
   Serial.println("Starting up");
@@ -128,7 +132,6 @@ M5UnitJoystick2 *mJoyStick2 = new M5UnitJoystick2([&](SpecKeys key, bool down)
   }
 }
 
-unsigned long frame_millis;
 void loop()
 {
     

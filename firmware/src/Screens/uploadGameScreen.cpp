@@ -15,12 +15,6 @@ void uploadGameScreen::pressKey(SpecKeys key) {
 }
 
 void uploadGameScreen::setupStorage(){
-  //usb_msc_init();
-  //msc_init();
-  //SPIFFS.end();
-  //setupMSC();
-
-  
   const esp_partition_t *data_partition = esp_partition_find_first(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_OTA_0, NULL);
   if (data_partition==NULL)
     Serial.printf("data partition not found\n");
