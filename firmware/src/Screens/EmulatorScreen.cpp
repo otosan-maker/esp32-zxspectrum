@@ -75,7 +75,10 @@ void EmulatorScreen::updatekey(SpecKeys key, uint8_t state)
   //     Serial.printf("Audio file closed\n");
   //   }
   // }
-  machine->updatekey(key, state);
+  if(key==GALDEANO_SNAPSHOT)
+    showSaveSnapshotScreen();
+  else
+    machine->updatekey(key, state);
 }
 
 void EmulatorScreen::showSaveSnapshotScreen()

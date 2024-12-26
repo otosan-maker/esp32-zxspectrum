@@ -14,7 +14,7 @@ class GameFilePickerScreen : public PickerScreen<FileInfoPtr>
         EmulatorScreen *emulatorScreen = new EmulatorScreen(m_tft, m_audioOutput);
         // TODO - we should pick the machine to run on - 48k or 128k
         // there's no way to know from the file name or the file contents GALDEANO_TODO_001
-        emulatorScreen->run(item->getPath(), models_enum::SPECMDL_128K);
+        emulatorScreen->run(item->getPath(), models_enum::SPECMDL_48K);
         m_navigationStack->push(emulatorScreen);
       }
       void onBack() {

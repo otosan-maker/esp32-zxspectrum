@@ -64,7 +64,7 @@ public:
   void run48K()
   {
     EmulatorScreen *emulatorScreen = new EmulatorScreen(m_tft, m_audioOutput);
-    emulatorScreen->run("/fs/aticatac.z80", models_enum::SPECMDL_48K);
+    emulatorScreen->run("/fs/snapshots/2W.Z80", models_enum::SPECMDL_48K);
     m_navigationStack->push(emulatorScreen);
   }
   void run128K()

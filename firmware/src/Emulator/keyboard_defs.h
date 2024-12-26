@@ -54,6 +54,7 @@ enum SpecKeys
   SPECKEY_DEL,
   SPECKEY_BREAK,
   SPECKEY_RESET,
+  GALDEANO_SNAPSHOT,
 };
 
 const std::unordered_map<SpecKeys, char> specKeyToLetter = {
