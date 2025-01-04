@@ -61,7 +61,8 @@ void setup(void)
 
   // print out avialable ram
   Serial.printf("Free heap:  %d\n", ESP.getFreeHeap());
-  Serial.printf("Free PSRAM: %d\n", ESP.getFreePsram(),ESP_IDF_VERSION_MAJOR);
+  Serial.printf("Free PSRAM: %d\n", ESP.getFreePsram());
+  Serial.printf("ESP-IDF version: %d\n", ESP_IDF_VERSION_MAJOR);
   
 
   // probar si el filesistem esta bien montado

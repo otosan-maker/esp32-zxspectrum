@@ -16,11 +16,12 @@ void uploadGameScreen::pressKey(SpecKeys key) {
 
 void uploadGameScreen::setupStorage(){
   const esp_partition_t *data_partition = esp_partition_find_first(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_OTA_0, NULL);
+  //const esp_partition_t *data_partition = esp_partition_find_first(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_OTA_1, "galdeano");
   if (data_partition==NULL)
     Serial.printf("data partition not found\n");
   esp_err_t err = esp_ota_set_boot_partition(data_partition);
   
-  Serial.printf("salida de set boot partittion %d",err);
+  Serial.printf("salida de set boot partiCion %d",err);
   Serial.println("");
   vTaskDelay(pdMS_TO_TICKS(2000));
   esp_restart();

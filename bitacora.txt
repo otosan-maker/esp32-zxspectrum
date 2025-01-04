@@ -1,3 +1,21 @@
+
+2024-12-30
+vamos a probar al reves, ponemos primero el micropython y luego el simulador de zxspectrum
+
+
+
+2024-12-29
+hay que editar el fichero /home/angel/.platformio/platforms/espressif32/boards/esp32-s3-devkitc1.json
+el parametro flash size para subir imagenes de 16 mb
+  "name": "Espressif ESP32-S3-DevKitC-1-N8 (8 MB QD, No PSRAM)",
+  "upload": {
+    "flash_size": "16MB",
+
+Vamos a poner los tres programas en la flash, a ver si funciona galdeano
+Modificamos el programa de usbmsc, para que pueda arrancar galdeano
+esptool.py  write_flash 0x110000 tusb_msc.bin
+esptool.py  write_flash 0x210000 galdeano_esp44_S3.bin 
+
 2024-12-23
 Habia problemas con la version de esp-idf que estaba usando, en el freamework de arduino es la 4.4
 Ahora monta bien la particion fat de la flash

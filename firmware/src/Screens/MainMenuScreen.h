@@ -38,19 +38,13 @@ public:
   {
     // Main menu
     MenuItemVector menuItems = {
-        std::make_shared<MenuItem>("48K ZX Spectrum", [&]()
-                                   { this->run48K(); }),
-        std::make_shared<MenuItem>("128K ZX Spectrum", [&]()
-                                   { this->run128K(); }),
-        std::make_shared<MenuItem>(" Juegos", [&]()
-                                   { this->showGames(); }),
-        std::make_shared<MenuItem>("Snapshots", [&]()
-                                   { this->showSnapshots(); }),
-        std::make_shared<MenuItem>("Subir juegos", [&]()
-                                   { this->usbShare(); }),
+        std::make_shared<MenuItem>("48K ZX Spectrum", [&]()  { this->run48K(); }),
+        //std::make_shared<MenuItem>("128K ZX Spectrum", [&]() { this->run128K(); }),
+        std::make_shared<MenuItem>("Carga juegos", [&]()           { this->showGames(); }),
+        std::make_shared<MenuItem>("Snapshots", [&]()        { this->showSnapshots(); }),
+        std::make_shared<MenuItem>("Subir juegos", [&]()     { this->usbShare(); }),
 #ifdef ENABLE_MSC
-        std::make_shared<MenuItem>("Mount SD Card", [&]()
-                                  { this->mountSDCard(); }),
+        std::make_shared<MenuItem>("Mount SD Card", [&]()    { this->mountSDCard(); }),
 #endif
     };
     setItems(menuItems);
@@ -64,7 +58,7 @@ public:
   void run48K()
   {
     EmulatorScreen *emulatorScreen = new EmulatorScreen(m_tft, m_audioOutput);
-    emulatorScreen->run("/fs/snapshots/2W.Z80", models_enum::SPECMDL_48K);
+    emulatorScreen->run("", models_enum::SPECMDL_48K);
     m_navigationStack->push(emulatorScreen);
   }
   void run128K()
