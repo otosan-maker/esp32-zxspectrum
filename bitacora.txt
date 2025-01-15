@@ -4,6 +4,8 @@ acabado casi el hardware, depuramos un poco mas.
 Snapshots, cambiamos la gestion de las teclas, el reproducir sonidos hacia que no funcionara bien.
 Tambien hay algo con la gestion de la funcion pop que no acaba de funcionar.
 
+PENDIENTE LA CARGA DE LOS SNAPSHOTS
+
 
 
 2024-12-29
