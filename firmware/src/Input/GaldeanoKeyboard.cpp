@@ -61,7 +61,7 @@ void GaldeanoKeyboard::keyboardTask(void *pParam)
 
     //si no ha pasado un timeout no mandamos las teclas repetidas
     if(EsIgual==true){
-      if( (thisUpdate-lastUpdate)<400){
+      if( (thisUpdate-lastUpdate)<300){
         //Serial.printf("No han cambiado las teclas y aun no ha pasado el timeout\n");
         nTeclas=0;
       }  

@@ -1,6 +1,8 @@
 
-2024-12-30
-vamos a probar al reves, ponemos primero el micropython y luego el simulador de zxspectrum
+2025-01-15
+acabado casi el hardware, depuramos un poco mas.
+Snapshots, cambiamos la gestion de las teclas, el reproducir sonidos hacia que no funcionara bien.
+Tambien hay algo con la gestion de la funcion pop que no acaba de funcionar.
 
 
 

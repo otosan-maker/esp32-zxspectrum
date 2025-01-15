@@ -33,7 +33,6 @@ class NavigationStack
       if (top) {
         top->willDisappear();
         top->setNavigationStack(nullptr);
-        delete top;
         stack.pop_back();
         top = stack.back();
         if (top) {

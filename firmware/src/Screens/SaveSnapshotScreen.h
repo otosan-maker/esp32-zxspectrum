@@ -48,48 +48,56 @@ public:
         Serial.println("Delete last character");
         filename = filename.substr(0, filename.length() - 1);
         updateDisplay();
-        playKeyClick();
+        //playKeyClick();
         return;
       }
       else
       {
-        playErrorBeep();
+        //playErrorBeep();
       }
       break;
     case SPECKEY_BREAK:
-      Serial.println("Cancel");
+      //Serial.println("Cancel");
       m_navigationStack->pop();
       return;
     default:
       // does the speckey map onto a letter - look in the mapping table
+      //Serial.println("default key");
       if (specKeyToLetter.find(key) != specKeyToLetter.end())
       {
+        //Serial.println("default key 2");
         char letter = specKeyToLetter.at(key);
         // only allow alphnum and not "."
         if (isalpha(letter) || isdigit(letter))
         {
+          //Serial.println("default key 3");
           // maximum length of 8
           if (filename.length() < 8)
           {
+            //Serial.println("default key 4");
             // make upper case
             letter = toupper(letter);
             filename += letter;
-            playKeyClick();
+            //playKeyClick();
             updateDisplay();
+            //Serial.println("default key 4a");
             return;
           }
           else
           {
-            playErrorBeep();
+            //Serial.println("default key 4b");
+            //playErrorBeep();
           }
         }
       }
+      //Serial.println("default key END");
     }
   };
   
 
   void updateDisplay()
   {
+    Serial.println("Update display");
     const int yMargin = 100;
     const int xMargin = 76;
     m_tft.loadFont(GillSans_30_vlw);
@@ -97,8 +105,8 @@ public:
     m_tft.fillRect(xMargin/2, yMargin/2, m_tft.width() - xMargin, m_tft.height() - yMargin, TFT_BLACK);
     m_tft.drawRect(xMargin/2, yMargin/2, m_tft.width() - xMargin, m_tft.height() - yMargin, TFT_WHITE);
     m_tft.setTextColor(TFT_WHITE, TFT_BLACK);
-    auto size = m_tft.measureString("Enter Filename");
-    m_tft.drawString("Enter Filename", (m_tft.width() - size.x)/2, yMargin/2 + 15);
+    auto size = m_tft.measureString("Fichero (8 max)");
+    m_tft.drawString("Fichero (8 max)", (m_tft.width() - size.x)/2, yMargin/2 + 15);
 
     int centerX = m_tft.width() / 2;
     int centerY = m_tft.height() / 2;
@@ -116,7 +124,7 @@ public:
 
     m_tft.loadFont(GillSans_15_vlw);
     auto instructionsSize = m_tft.measureString("Press ENTER to save, BREAK to exit");
-    m_tft.drawString("Press ENTER to save, BREAK to exit", centerX - instructionsSize.x/2, centerY + 40);
+    m_tft.drawString("ENTER guardar, BREAK salir", centerX - instructionsSize.x/2, centerY + 40);
 
     m_tft.endWrite();
   }
