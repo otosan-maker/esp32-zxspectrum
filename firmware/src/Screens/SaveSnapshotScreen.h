@@ -37,7 +37,7 @@ public:
         auto bl = BusyLight();
         drawBusy();
         saveZ80(machine, ("/fs/snapshots/" + filename + ".Z80").c_str());
-        playSuccessBeep();
+        //playSuccessBeep();
         vTaskDelay(500 / portTICK_PERIOD_MS);
         m_navigationStack->pop();
         return;
@@ -57,7 +57,7 @@ public:
       }
       break;
     case SPECKEY_BREAK:
-      //Serial.println("Cancel");
+      //2Serial.println("Cancel");
       m_navigationStack->pop();
       return;
     default:
